@@ -13,7 +13,7 @@ import warnings
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, file_be_gone
 from coverage.report import Reporter
 
 from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin, TESTS_DIR, UsingModulesMixin
@@ -388,10 +388,12 @@ class ApiTest(CoverageTest):
         cov1.save()
         self.check_code1_code2(cov1)
 
+        file_be_gone(".coverage")
         cov2 = coverage.Coverage()
         with self.assertRaisesRegex(CoverageException, r"No data to combine"):
             cov2.combine(strict=True)
 
+        file_be_gone(".coverage")
         cov3 = coverage.Coverage()
         cov3.combine()
         # Now the data is empty!

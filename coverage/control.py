@@ -160,6 +160,8 @@ class Coverage(object):
         self._exclude_re = None
         self._debug = None
 
+        self._implicit_read = True
+
         # State machine variables:
         # Have we initialized everything?
         self._inited = False
@@ -272,6 +274,7 @@ class Coverage(object):
         # started rather than wherever the process eventually chdir'd to.
         self._data = CoverageData(
             basename=self.config.data_file, warn=self._warn, debug=self._debug,
+            read=self._implicit_read,
         )
 
         # Set the reporting precision.
@@ -394,7 +397,6 @@ class Coverage(object):
         """Load previously-collected coverage data from the data file."""
         self._init()
         self._collector.reset()
-        self._data.read()
 
     def start(self):
         """Start measuring code coverage.
@@ -892,6 +894,7 @@ def process_startup():
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False
     cov._auto_save = True
+    cov._implicit_read = False
     cov.start()
 
     return cov

@@ -236,7 +236,6 @@ class ConcurrencyTest(CoverageTest):
             # Read the coverage file and see that try_it.py has all its lines
             # executed.
             data = coverage.CoverageData(".coverage")
-            data.read()
 
             # If the test fails, it's helpful to see this info:
             fname = abs_file("try_it.py")

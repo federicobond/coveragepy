@@ -57,12 +57,11 @@ class CoverageData(object):
     names in this API are case-sensitive, even on platforms with
     case-insensitive file systems.
 
-    A data file is associated with the data when the :class:`CoverageData`
-    is created.
+    A data file is associated with the object when the :class:`CoverageData`
+    is created, and the file is read implicitly.
 
-    To read a coverage.py data file, use :meth:`read`.  You can then
-    access the line, arc, or file tracer data with :meth:`lines`, :meth:`arcs`,
-    or :meth:`file_tracer`.  Run information is available with
+    You can access the line, arc, or file tracer data with :meth:`lines`,
+    :meth:`arcs`, or :meth:`file_tracer`.  Run information is available with
     :meth:`run_infos`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
@@ -112,14 +111,16 @@ class CoverageData(object):
     # line data is easily recovered from the arcs: it is all the first elements
     # of the pairs that are greater than zero.
 
-    def __init__(self, basename=None, warn=None, debug=None):
+    def __init__(self, basename=None, warn=None, debug=None, read=True):
         """Create a CoverageData.
-
-        `warn` is the warning function to use.
 
         `basename` is the name of the file to use for storing data.
 
+        `warn` is the warning function to use.
+
         `debug` is a `DebugControl` object for writing debug messages.
+
+        `read` controls whether the data file is read initially.
 
         """
         self._warn = warn
@@ -149,6 +150,9 @@ class CoverageData(object):
 
         # A list of dicts of information about the coverage.py runs.
         self._runs = []
+
+        if read:
+            self._read()
 
     def __repr__(self):
         return "<{klass} lines={lines} arcs={arcs} tracers={tracers} runs={runs}>".format(
@@ -268,7 +272,7 @@ class CoverageData(object):
 
     __bool__ = __nonzero__
 
-    def read(self):
+    def _read(self):
         """Read the coverage data.
 
         It is fine for the file to not exist, in which case no data is read.
@@ -276,6 +280,9 @@ class CoverageData(object):
         """
         if os.path.exists(self.filename):
             self._read_file(self.filename)
+        else:
+            if self._debug and self._debug.should('dataio'):
+                self._debug.write("Didn't find data file %r" % (self.filename,))
 
     def _read_fileobj(self, file_obj):
         """Read the coverage data from the given file object.

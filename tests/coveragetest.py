@@ -90,6 +90,9 @@ class CoverageTest(
         self.last_command_output = None
         self.last_module_name = None
 
+        from coverage.misc import file_be_gone
+        file_be_gone(".coverage")
+
         if _TEST_NAME_FILE:                                 # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
                 f.write("%s_%s" % (

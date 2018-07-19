@@ -422,7 +422,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata1.write()
 
         covdata2 = CoverageData()
-        covdata2.read()
         self.assert_arcs3_data(covdata2)
 
 
@@ -435,7 +434,6 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         covdata1.write()
 
         covdata2 = CoverageData("lines.dat")
-        covdata2.read()
         self.assert_lines1_data(covdata2)
 
     def test_read_write_arcs(self):
@@ -444,29 +442,31 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         covdata1.write()
 
         covdata2 = CoverageData("arcs.dat")
-        covdata2.read()
         self.assert_arcs3_data(covdata2)
 
     def test_read_errors(self):
         msg = r"Couldn't read data from '.*[/\\]{0}': \S+"
 
         self.make_file("xyzzy.dat", "xyzzy")
+        covdata = None
         with self.assertRaisesRegex(CoverageException, msg.format("xyzzy.dat")):
             covdata = CoverageData("xyzzy.dat")
-            covdata.read()
-        self.assertFalse(covdata)
+        if covdata is not None:
+            self.assertFalse(covdata)
 
         self.make_file("empty.dat", "")
+        covdata = None
         with self.assertRaisesRegex(CoverageException, msg.format("empty.dat")):
             covdata = CoverageData("empty.dat")
-            covdata.read()
-        self.assertFalse(covdata)
+        if covdata is not None:
+            self.assertFalse(covdata)
 
         self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
+        covdata = None
         with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
             covdata = CoverageData("misleading.dat")
-            covdata.read()
-        self.assertFalse(covdata)
+        if covdata is not None:
+            self.assertFalse(covdata)
 
     def test_debug_main(self):
         covdata1 = CoverageData(".coverage")
@@ -521,7 +521,6 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
     def test_reading_missing(self):
         self.assert_doesnt_exist(".coverage")
         covdata = CoverageData()
-        covdata.read()
         self.assert_line_counts(covdata, {})
 
     def test_writing_and_reading(self):
@@ -530,7 +529,6 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata1.write()
 
         covdata2 = CoverageData()
-        covdata2.read()
         self.assert_line_counts(covdata2, SUMMARY_1)
 
     def test_debug_output_with_debug_option(self):
@@ -542,13 +540,15 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata1.write()
 
         covdata2 = CoverageData(debug=debug)
-        covdata2.read()
         self.assert_line_counts(covdata2, SUMMARY_1)
 
         self.assertRegex(
             debug.get_output(),
-            r"^Writing data to '.*\.coverage'\n"
-            r"Reading data from '.*\.coverage'\n$"
+            r"^"
+            r"Didn't find data file '.*\.coverage'\n"
+            r"Writing data to '.*\.coverage'\n"
+            r"Reading data from '.*\.coverage'\n"
+            r"$"
         )
 
     def test_debug_output_without_debug_option(self):
@@ -560,7 +560,6 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata1.write()
 
         covdata2 = CoverageData(debug=debug)
-        covdata2.read()
         self.assert_line_counts(covdata2, SUMMARY_1)
 
         self.assertEqual(debug.get_output(), "")
@@ -626,7 +625,6 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_line_counts(covdata1, {})
 
         covdata2 = CoverageData()
-        covdata2.read()
         self.assert_line_counts(covdata2, {})
 
     def test_erasing_parallel(self):
