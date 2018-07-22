@@ -694,6 +694,7 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
+        self._init()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
@@ -715,6 +716,7 @@ class Coverage(object):
         See :meth:`report` for other arguments.
 
         """
+        self._init()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include
             )
@@ -741,6 +743,7 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
+        self._init()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
@@ -765,6 +768,7 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
+        self._init()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             xml_output=outfile,

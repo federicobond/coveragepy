@@ -189,7 +189,7 @@ class PluginTest(CoverageTest):
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
-        cov.load()
+        cov.get_data()
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
         if env.C_TRACER:
@@ -218,7 +218,7 @@ class PluginTest(CoverageTest):
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_no_sys_info"])
-        cov.load()
+        cov.get_data()
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
         self.assertIn('plugins.file_tracers: -none-', out_lines)
